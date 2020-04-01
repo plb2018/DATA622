@@ -1,0 +1,52 @@
+---
+title: 'Data 2 - Homework #1'
+author: "Paul Britton"
+date: '2020-04-02'
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```
+prospecting dataset
+age-group,networth,status,credit_rating,class:prospect
+youth,high,employed,fair,no
+youth,high,employed,excellent,no
+middle,high,employed,fair,yes
+senior,medium,employed,fair,yes
+senior,low,unemployed,fair,yes
+senior,low,unemployed,excellent,no
+middle,low,unemployed,excellent,yes
+youth,medium,employed,fair,no
+youth,low,unemployed,fair,yes
+senior,medium,unemployed,fair,yes
+youth,medium,unemployed,excellent,yes
+middle,medium,employed,excellent,yes
+middle,high,unemployed,fair,yes
+senior,medium,employed,excellent,no
+```
+
+You have been hired by a local electronics retailer and the above dataset has been given to you. Manager Bayes Jr.9th wants to create a spreadsheet to predict is a customer is likely prospect. To that end:
+
+1. Compute prior probabilities for the Prospect Yes/No
+2. Compute the conditional probabilities $P(age-group=youth|prospect=yes)$ and $P(age-group=youth|prospect=no)$ where age-group is a predictor variable. Compute the conditional probabilities for each predictor variable, namely,$(age_group,networth,status,credit_rating)$
+3) Assuming the assumptions of Naive Bayes are met, compute the posterior probability $P(prospect|X)$ where X is one of the predictor variable.
+
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
