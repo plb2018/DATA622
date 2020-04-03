@@ -3,50 +3,460 @@ title: 'Data 2 - Homework #1'
 author: "Paul Britton"
 date: '2020-04-02'
 output:
-  html_notebook:
-    toc: yes
   html_document:
     df_print: paged
     toc: yes
     toc_collapsed: yes
     toc_float: yes
+  html_notebook:
+    toc: yes
+  pdf_document:
+    toc: yes
 theme: lumen
 number_sections: yes
 toc_depth: 3
 ---
 
+```{r load.requirements, warning = FALSE, message = FALSE,cache=FALSE}
+#clear the workspace
+rm(list = ls())
+
+
+
+
+#load req's packages
+library(knitr)
+library(psych)
+library(tidyr)
+library(ggplot2)
+
+#clear out the cache
+clean_cache(clean = TRUE, path = opts_chunk$get("cache.path"))
 ```
-prospecting dataset
-age-group,networth,status,credit_rating,class:prospect
-youth,high,employed,fair,no
-youth,high,employed,excellent,no
-middle,high,employed,fair,yes
-senior,medium,employed,fair,yes
-senior,low,unemployed,fair,yes
-senior,low,unemployed,excellent,no
-middle,low,unemployed,excellent,yes
-youth,medium,employed,fair,no
-youth,low,unemployed,fair,yes
-senior,medium,unemployed,fair,yes
-youth,medium,unemployed,excellent,yes
-middle,medium,employed,excellent,yes
-middle,high,unemployed,fair,yes
-senior,medium,employed,excellent,no
+
+
+
+
+
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/prospecting_dataset.txt", header=T)
+
 ```
+## Question 1
+
+```{r}
+kable(df,caption="Prospecting Dataset")
+```
+
+
 
 You have been hired by a local electronics retailer and the above dataset has been given to you. Manager Bayes Jr.9th wants to create a spreadsheet to predict is a customer is likely prospect. To that end:
 
 1. Compute prior probabilities for the Prospect Yes/No
-2. Compute the conditional probabilities $P(age-group=youth|prospect=yes)$ and $P(age-group=youth|prospect=no)$ where age-group is a predictor variable. Compute the conditional probabilities for each predictor variable, namely,$(age_group,networth,status,credit_rating)$
-3) Assuming the assumptions of Naive Bayes are met, compute the posterior probability $P(prospect|X)$ where X is one of the predictor variable.
+2. Compute the conditional probabilities $P(age-group=youth|prospect=yes)$ and $P(age-group=youth|prospect=no)$ where age-group is a predictor variable. Compute the conditional probabilities for each predictor variable, namely,$(age\_group,networth,status,credit\_rating)$
+3. Assuming the assumptions of Naive Bayes are met, compute the posterior probability $P(prospect|X)$ where X is one of the predictor variable.
+
+
+### 1  Compute prior probabilities for the Prospect Yes/No
+
+```{r}
+
+#group the "yes" and "no" to simplify things
+yes <- df[df$class.prospect == "yes",]
+no <- df[!df$class.prospect == "yes",] 
+
+#compute priors
+p.yes <- nrow(yes)/nrow(df)
+p.no <- 1-p.yes
+
+#format for output
+probs <- data.frame(c(p.yes,p.no))
+row.names(probs) <- c("Yes","No")
+colnames(probs) <- c("Prior.Probs")
+
+#output
+kable(probs)
+
+```
+
+### 2 Compute the conditional probabilities 
+
+Compute the conditional probabilities $P(age-group=youth|prospect=yes)$ and $P(age-group=youth|prospect=no)$ where age-group is a predictor variable. Compute the conditional probabilities for each predictor variable, namely,$(age\_group,networth,status,credit\_rating)$
+
+```{r}
+
+name <- c("P(age-group=youth|prospect=yes)",
+"P(age-group=middle|prospect=yes)",
+"P(age-group=senior|prospect=yes)",
+"P(age-group=youth|prospect=no)",
+"P(age-group=middle|prospect=no)",
+"P(age-group=senior|prospect=no)",
+"P(networth=high|prospect=yes)",
+"P(networth=low|prospect=yes)",
+"P(networth=medium|prospect=yes)",
+"P(networth=high|prospect=no)",
+"P(networth=low|prospect=no)",
+"P(networth=medium|prospect=no)",
+"P(status=employed|prospect=yes)",
+"P(status=employed|prospect=no)",
+"P(status=unemployed|prospect=yes)",
+"P(status=unemployed|prospect=no)",
+"P(credit=fair|prospect=yes)",
+"P(credit=excellent|prospect=no)",
+"P(credit=fair|prospect=yes)",
+"P(credit=excellent|prospect=no)")
+
+#manually compute all 20 priors
+value <- vector(mode = "list", length = length(name))
+
+value[1]  <- sum(yes$age.group == "youth")/ nrow(yes)         #P(age-group=youth|prospect=yes)
+value[2]  <- sum(yes$age.group == "middle")/ nrow(yes)        #P(age-group=middle|prospect=yes)
+value[3]  <- sum(yes$age.group == "senior")/ nrow(yes)        #P(age-group=senior|prospect=yes)
+value[4]  <- sum(no$age.group == "youth")/ nrow(no)           #P(age-group=youth|prospect=no)",
+value[5]  <- sum(no$age.group == "middle")/ nrow(no)          #P(age-group=middle|prospect=no)"
+value[6]  <- sum(no$age.group == "senior")/ nrow(no)          #P(age-group=senior|prospect=no)
+value[7]  <- sum(yes$networth == "high")/ nrow(yes)           #P(networth=high|prospect=yes)
+value[8]  <- sum(yes$networth == "low")/ nrow(yes)            #P(networth=low|prospect=yes)
+value[9]  <- sum(yes$networth == "medium")/ nrow(yes)         #P(networth=medium|prospect=yes)
+value[10] <- sum(no$networth == "high")/ nrow(no)             #P(networth=high|prospect=no)
+value[11] <- sum(no$networth == "low")/ nrow(no)              #P(networth=low|prospect=no)
+value[12] <- sum(no$networth == "medium")/ nrow(no)           #P(networth=medium|prospect=no)
+value[13] <- sum(yes$status == "employed")/ nrow(yes)         #P(status=employed|prospect=yes)
+value[14] <- sum(no$status == "employed")/ nrow(no)           #P(status=employed|prospect=no)
+value[15] <- sum(yes$status == "unemployed")/ nrow(yes)       #P(status=unemployed|prospect=yes)
+value[16] <- sum(no$status == "unemployed")/ nrow(no)         #P(status=unemployed|prospect=no)
+value[17] <- sum(yes$credit_rating == "fair")/ nrow(yes)      #P(credit=fair|prospect=yes)
+value[18] <- sum(no$credit_rating == "fair")/ nrow(no)        #P(credit=excellent|prospect=no)
+value[19] <- sum(yes$credit_rating == "excellent")/ nrow(yes) #P(credit=fair|prospect=yes)
+value[20] <- sum(no$credit_rating == "excellent")/ nrow(no)   #P(credit=excellent|prospect=no)
+
+#bind names and values
+q1 <- data.frame(cbind(name,value))
+
+#output as a table
+kable(q1)
+
+```
+
+
+
+### 3 Assuming the assumptions of Naive Bayes are met, compute the posterior probability $P(prospect|X)$ where X is one of the predictor variable.
+
+It appears as though the assumptions of naive bayes are satisfied in that sense that it is plausible that all of the categories of predictors are independent.  It could be argued that things like "networth", "credit" and "employment" are not independent in practice... but here we will assume that they if only because I'd like to answer part 3 of the question.
+
+We will look at the posterior probability of credit given prospect.
+
+```{r}
+
+prob.employed <- 7/14
+prob.unemployed <- 1-prob.employed
+
+prob.yes.given.employed <- value[[13]]
+prob.no.given.employed <- value[[14]]
+prob.yes.given.unemployed <- value[[15]]
+prob.no.given.unemployed <- value[[16]] 
+
+prob.employed.given.yes <- (prob.yes.given.employed * prob.employed )/((prob.yes.given.employed *prob.employed) + (prob.yes.given.unemployed * prob.unemployed)) 
+
+prob.employed.given.no <-  (prob.yes.given.unemployed * prob.unemployed) /((prob.yes.given.employed *prob.employed) + (prob.yes.given.unemployed * prob.unemployed)) 
+
+
+prob.unemployed.given.yes <- 1-prob.employed.given.yes
+prob.unemployed.given.no <- 1-prob.employed.given.no
+
+e <- c(prob.employed.given.yes,prob.employed.given.no)
+u <- c(prob.unemployed.given.yes,prob.unemployed.given.no)
+
+out <- cbind(e,u)
+
+row.names(out) <- c("Prospect.Yes", "Prospect.No")
+colnames(out) <- c("Employed","Unemployed")
+
+kable(out)
+
+```
+
+## Question 2
+
+You just recently joined a datascience team.
+
+There are two datasets junk1.txt and junk2.csv They have two options
+1. They can go back to the client and ask for more data to remedy problems with the data. 
+2. They can accept the data and undertake a major analytics exercise.
+
+The team is relying on your dsc skills to determine how they should proceed.
+
+Can you explore the data and recommend actions for each file enumerating the reasons.
+
+
+### Initial Observations
+
+Upon loading the files I note that they have different extentions and different delimiters, despite looking reasonably similar otherwise.  The inconsistencies between these 2 files would probably cause me to approach them with a higher level of scrutiny than would otherwise be the case.
+
+In addition, I would likely request additional data regarding the context of the data.  What is the process that produces these data?  What info is there available about the origin of the data.  This data would be the basis for forming some intuition about the data - intuition is essential in data science.
+
+```{r}
+#load the data
+junk1 <- read.csv("https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/junk1.txt", header=T,sep = " ")
+junk2 <- read.csv("https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/junk2.csv", header=T, sep = ",")
+
+
+
+
+```
+
+### Inspect the data
+
+In both cases we have data in "long" format where each each row contains a full set of observations or a "case".  We have variables "a" & "b" which are floating point and apparently continuous and a "class" variable which appears to be an integer and based on the name, likely a categorical variable.  
+
+```{r}
+
+kable(head(junk1,5))
+kable(head(junk2,5))
+
+```
+
+
+### Look for missing cases
+
+Next we check for missing values and find that there are no incomplete cases in either of the files.
+
+```{r}
+
+missing.data <- data.frame(c(sum(!complete.cases(junk1)),sum(!complete.cases(junk2))))
+row.names(missing.data) <- c("Junk1","Junk2")
+colnames(missing.data) <- c("Number of Missing Values")
+
+kable(missing.data)
+
+
+```
+
+### Summary Statistics
+
+Now we compute summary statistics for reference.  It may be difficult to deduce anything from the summary stats alone without actually inspecting the data visually, however, we compute them now so that we can refer back to them as needed.
+
+```{r}
+describe(junk1)
+describe(junk2)
+```
+
+### Visualize the Data
+
+From the plots below we can see that:
+
+#### Junk1
+- Both A and B appear to be reasonably normally distributed around zero.  B appears to be bi-modal however this is likely a resolution issue due to small sample size.  Density plots are also shown as they better illustrate the shape of the distributions given the sample size.
+- The pairs plot shows that A and B appear to be uncorrelated
 
 
 ```{r}
-plot(cars)
+
+junk1 %>%
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram(bins=100)+
+    ggtitle("Junk1 - Histograms")
+
+junk1 %>%
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_density()+
+    ggtitle("Junk1 - Density Plots")
+
+
+par(mfrow=c(3,1))
+plot(junk1$a,type='l')
+plot(junk1$b,type='l')
+plot(junk1$class,type='l')
+
+
+
+pairs(junk1, main="Junk1 Pairs Plot")
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+#### Junk2
+- Similar story between Junk1 and Junk2, however, in the distributions of A and B almost look like mirror images of one another.
+- The timeseries makes it look as if A & B from Junk2 may be samples from several distinct processes.  Series A has a level change at point 1000 and a level AND variability change at point 3000.  Series B has similar changes at point 2000 and point 3000 respectively.
+- If we knew more about the process it might make sense to align a[1:1000] and b[2001:3000], a[1000:3000] and b[1:2000], a[3000:end], b[3000:end]
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r}
+junk2 %>%
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram()+
+    ggtitle("Junk2 - Histograms")
+
+junk2 %>%
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_density()+
+    ggtitle("Junk2 - Density Plots")
+
+
+par(mfrow=c(3,1))
+plot(junk2$a,type='l')
+plot(junk2$b,type='l')
+plot(junk2$class,type='l')
+
+pairs(junk2, main="Junk2 Pairs Plot")
+
+```
+
+
+
+
+### Overall Assessment
+
+I would request more information about the context and process to help drive context about the data.  Otherwise we see that
+
+- The data appear to be similar to one another (junk1,junk2) and appea to be gaussian with a mean of apporx zero.
+- The data appear to be normally distributed in both cases
+- The data appear to be uncorrelated
+- The line-plot for data be shows a strange pattern which makes me wonder whether A and B might be reported out of synch or something
+
+
+### Reccomendations
+
+-Determine whether these two data sets can be combined (based only on the character of the data, it appears yes)
+-Determine why the variance in Junk2 isn't stable and either transform (standarize variables using BoxCox, for example) or re-organize into more variables as appropriate
+
+
+## Question 3
+Read the icu.csv subset it with these 5 features in the formula and STA is the labelcol.
+- Split the icu 70/30 train/test and
+- run the kNN.R for K=(3,5,7,15,25,50)
+
+Submit the result confusionMatrix, Accuracy for each K & Plot Accuracy vs K.
+
+write a short summary of your findings.
+
+
+### Load ICU
+```{r}
+icu <- read.csv("https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/icu.csv", header=T, sep = ",")
+
+#add coma variable as per instructions
+icu$COMA <- 0
+icu$COMA[icu$LOC == 2] <-1
+
+#subset keeping STA as the LAST column
+knn.in <- icu[c("TYP","COMA","AGE","INF","STA")]
+
+
+
+```
+
+### Load KNN.r
+```{r cache=FALSE}
+euclideanDist <- function(a, b){
+  d = 0
+  for(i in c(1:(length(a)) ))
+  {
+    d = d + (a[[i]]-b[[i]])^2
+  }
+  d = sqrt(d)
+  return(d)
+}
+
+knn_predict2 <- function(test_data, train_data, k_value, labelcol){
+  pred <- c()  #empty pred vector 
+  #LOOP-1
+  for(i in c(1:nrow(test_data))){   #looping over each record of test data
+    eu_dist =c()          #eu_dist & eu_char empty  vector
+    eu_char = c()
+    good = 0              #good & bad variable initialization with 0 value
+    bad = 0
+    
+    #LOOP-2-looping over train data 
+    for(j in c(1:nrow(train_data))){
+ 
+      #adding euclidean distance b/w test data point and train data to eu_dist vector
+      eu_dist <- c(eu_dist, euclideanDist(test_data[i,-c(labelcol)], train_data[j,-c(labelcol)]))
+ 
+      #adding class variable of training data in eu_char
+      eu_char <- c(eu_char, as.character(train_data[j,][[labelcol]]))
+    }
+    
+    eu <- data.frame(eu_char, eu_dist) #eu dataframe created with eu_char & eu_dist columns
+ 
+    eu <- eu[order(eu$eu_dist),]       #sorting eu dataframe to gettop K neighbors
+    eu <- eu[1:k_value,]               #eu dataframe with top K neighbors
+ 
+    tbl.sm.df<-table(eu$eu_char)
+    cl_label<-  names(tbl.sm.df)[[as.integer(which.max(tbl.sm.df))]]
+    
+    pred <- c(pred, cl_label)
+    }
+    return(pred) #return pred vector
+  }
+  
+
+accuracy <- function(test_data,labelcol,predcol){
+  correct = 0
+  for(i in c(1:nrow(test_data))){
+    if(test_data[i,labelcol] == test_data[i,predcol]){ 
+      correct = correct+1
+    }
+  }
+  accu = (correct/nrow(test_data)) * 100  
+  return(accu)
+}
+
+#load data
+knn.df<- knn.in
+labelcol <- 5 # for iris it is the fifth col 
+predictioncol<-labelcol+1
+
+# create train/test partitions
+set.seed(2)
+n<-nrow(knn.df)
+knn.df<- knn.df[sample(n),]
+
+train.df <- knn.df[1:as.integer(0.7*n),]
+
+k.values <- c(3,5,7,15,25,50)
+
+acc <- vector()
+
+for (kval in k.values ){
+
+  K = kval # number of neighbors to determine the class
+  table(train.df[,labelcol])
+  test.df <- knn.df[as.integer(0.7*n +1):n,]
+  table(test.df[,labelcol])
+  
+  predictions <- knn_predict2(test.df, train.df, K,labelcol) #calling knn_predict()
+  
+  test.df[,predictioncol] <- predictions #Adding predictions in test data as 7th column
+  print(paste0("The accuracy for K=",K," is ",accuracy(test.df,labelcol,predictioncol)))
+  print("The Confustion Matrix is:")
+  print(table(test.df[[predictioncol]],test.df[[labelcol]]))
+  
+  acc <- c(acc,accuracy(test.df,labelcol,predictioncol))
+
+}
+
+plot(acc,main="Accuracy Plot",
+        xlab="Value of K",
+        ylab="Accuracy",
+        xaxt="n")
+
+
+
+axis(1,at=1:6,labels = k.values)
+
+head(knn.df)
+print(acc)
+print(test.df)
+```
+
+### Summary
+
+Here I was able to successfully run the code as per the instructions.  In this case (i.e. ICU data) we can see that accuracy continues to climb intul it reaches 15, where it remains steady.
