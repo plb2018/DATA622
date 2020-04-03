@@ -1,0 +1,858 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={Data 2 - Homework \#1},
+            pdfauthor={Paul Britton},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{long table}}{}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{Data 2 - Homework \#1}
+\author{Paul Britton}
+\date{2020-04-02}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+The rpubs version of this work can be found
+\href{https://rpubs.com/plb_lttfer/593848}{here}, and source/data can be
+found on github
+\href{https://github.com/plb2018/DATA622/tree/master/homework1}{here}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/prospecting_dataset.txt"}\NormalTok{, }\DataTypeTok{header=}\NormalTok{T)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Question 1}\label{question-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(df,}\DataTypeTok{caption=}\StringTok{"Prospecting Dataset"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\caption{Prospecting Dataset}\tabularnewline
+\toprule
+age.group & networth & status & credit\_rating &
+class.prospect\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+age.group & networth & status & credit\_rating &
+class.prospect\tabularnewline
+\midrule
+\endhead
+youth & high & employed & fair & no\tabularnewline
+youth & high & employed & excellent & no\tabularnewline
+middle & high & employed & fair & yes\tabularnewline
+senior & medium & employed & fair & yes\tabularnewline
+senior & low & unemployed & fair & yes\tabularnewline
+senior & low & unemployed & excellent & no\tabularnewline
+middle & low & unemployed & excellent & yes\tabularnewline
+youth & medium & employed & fair & no\tabularnewline
+youth & low & unemployed & fair & yes\tabularnewline
+senior & medium & unemployed & fair & yes\tabularnewline
+youth & medium & unemployed & excellent & yes\tabularnewline
+middle & medium & employed & excellent & yes\tabularnewline
+middle & high & unemployed & fair & yes\tabularnewline
+senior & medium & employed & excellent & no\tabularnewline
+\bottomrule
+\end{longtable}
+
+You have been hired by a local electronics retailer and the above
+dataset has been given to you. Manager Bayes Jr.9th wants to create a
+spreadsheet to predict is a customer is likely prospect. To that end:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute prior probabilities for the Prospect Yes/No
+\item
+  Compute the conditional probabilities
+  \(P(age-group=youth|prospect=yes)\) and
+  \(P(age-group=youth|prospect=no)\) where age-group is a predictor
+  variable. Compute the conditional probabilities for each predictor
+  variable, namely,\((age\_group,networth,status,credit\_rating)\)
+\item
+  Assuming the assumptions of Naive Bayes are met, compute the posterior
+  probability \(P(prospect|X)\) where X is one of the predictor
+  variable.
+\end{enumerate}
+
+\subsubsection{1 Compute prior probabilities for the Prospect
+Yes/No}\label{compute-prior-probabilities-for-the-prospect-yesno}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#group the "yes" and "no" to simplify things}
+\NormalTok{yes <-}\StringTok{ }\NormalTok{df[df}\OperatorTok{$}\NormalTok{class.prospect }\OperatorTok{==}\StringTok{ "yes"}\NormalTok{,]}
+\NormalTok{no <-}\StringTok{ }\NormalTok{df[}\OperatorTok{!}\NormalTok{df}\OperatorTok{$}\NormalTok{class.prospect }\OperatorTok{==}\StringTok{ "yes"}\NormalTok{,] }
+
+\CommentTok{#compute priors}
+\NormalTok{p.yes <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)}\OperatorTok{/}\KeywordTok{nrow}\NormalTok{(df)}
+\NormalTok{p.no <-}\StringTok{ }\DecValTok{1}\OperatorTok{-}\NormalTok{p.yes}
+
+\CommentTok{#format for output}
+\NormalTok{probs <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{c}\NormalTok{(p.yes,p.no))}
+\KeywordTok{row.names}\NormalTok{(probs) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Yes"}\NormalTok{,}\StringTok{"No"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(probs) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Prior.Probs"}\NormalTok{)}
+
+\CommentTok{#output}
+\KeywordTok{kable}\NormalTok{(probs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule
+& Prior.Probs\tabularnewline
+\midrule
+\endhead
+Yes & 0.6428571\tabularnewline
+No & 0.3571429\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{2 Compute the conditional
+probabilities}\label{compute-the-conditional-probabilities}
+
+Compute the conditional probabilities
+\(P(age-group=youth|prospect=yes)\) and
+\(P(age-group=youth|prospect=no)\) where age-group is a predictor
+variable. Compute the conditional probabilities for each predictor
+variable, namely,\((age\_group,networth,status,credit\_rating)\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{name <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"P(age-group=youth|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(age-group=middle|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(age-group=senior|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(age-group=youth|prospect=no)"}\NormalTok{,}
+\StringTok{"P(age-group=middle|prospect=no)"}\NormalTok{,}
+\StringTok{"P(age-group=senior|prospect=no)"}\NormalTok{,}
+\StringTok{"P(networth=high|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(networth=low|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(networth=medium|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(networth=high|prospect=no)"}\NormalTok{,}
+\StringTok{"P(networth=low|prospect=no)"}\NormalTok{,}
+\StringTok{"P(networth=medium|prospect=no)"}\NormalTok{,}
+\StringTok{"P(status=employed|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(status=employed|prospect=no)"}\NormalTok{,}
+\StringTok{"P(status=unemployed|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(status=unemployed|prospect=no)"}\NormalTok{,}
+\StringTok{"P(credit=fair|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(credit=excellent|prospect=no)"}\NormalTok{,}
+\StringTok{"P(credit=fair|prospect=yes)"}\NormalTok{,}
+\StringTok{"P(credit=excellent|prospect=no)"}\NormalTok{)}
+
+\CommentTok{#manually compute all 20 priors}
+\NormalTok{value <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"list"}\NormalTok{, }\DataTypeTok{length =} \KeywordTok{length}\NormalTok{(name))}
+
+\NormalTok{value[}\DecValTok{1}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "youth"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)         }\CommentTok{#P(age-group=youth|prospect=yes)}
+\NormalTok{value[}\DecValTok{2}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "middle"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)        }\CommentTok{#P(age-group=middle|prospect=yes)}
+\NormalTok{value[}\DecValTok{3}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "senior"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)        }\CommentTok{#P(age-group=senior|prospect=yes)}
+\NormalTok{value[}\DecValTok{4}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "youth"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)           }\CommentTok{#P(age-group=youth|prospect=no)",}
+\NormalTok{value[}\DecValTok{5}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "middle"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)          }\CommentTok{#P(age-group=middle|prospect=no)"}
+\NormalTok{value[}\DecValTok{6}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{age.group }\OperatorTok{==}\StringTok{ "senior"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)          }\CommentTok{#P(age-group=senior|prospect=no)}
+\NormalTok{value[}\DecValTok{7}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "high"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)           }\CommentTok{#P(networth=high|prospect=yes)}
+\NormalTok{value[}\DecValTok{8}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "low"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)            }\CommentTok{#P(networth=low|prospect=yes)}
+\NormalTok{value[}\DecValTok{9}\NormalTok{]  <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "medium"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)         }\CommentTok{#P(networth=medium|prospect=yes)}
+\NormalTok{value[}\DecValTok{10}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "high"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)             }\CommentTok{#P(networth=high|prospect=no)}
+\NormalTok{value[}\DecValTok{11}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "low"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)              }\CommentTok{#P(networth=low|prospect=no)}
+\NormalTok{value[}\DecValTok{12}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{networth }\OperatorTok{==}\StringTok{ "medium"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)           }\CommentTok{#P(networth=medium|prospect=no)}
+\NormalTok{value[}\DecValTok{13}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{status }\OperatorTok{==}\StringTok{ "employed"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)         }\CommentTok{#P(status=employed|prospect=yes)}
+\NormalTok{value[}\DecValTok{14}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{status }\OperatorTok{==}\StringTok{ "employed"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)           }\CommentTok{#P(status=employed|prospect=no)}
+\NormalTok{value[}\DecValTok{15}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{status }\OperatorTok{==}\StringTok{ "unemployed"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)       }\CommentTok{#P(status=unemployed|prospect=yes)}
+\NormalTok{value[}\DecValTok{16}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{status }\OperatorTok{==}\StringTok{ "unemployed"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)         }\CommentTok{#P(status=unemployed|prospect=no)}
+\NormalTok{value[}\DecValTok{17}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{credit_rating }\OperatorTok{==}\StringTok{ "fair"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes)      }\CommentTok{#P(credit=fair|prospect=yes)}
+\NormalTok{value[}\DecValTok{18}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{credit_rating }\OperatorTok{==}\StringTok{ "fair"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)        }\CommentTok{#P(credit=excellent|prospect=no)}
+\NormalTok{value[}\DecValTok{19}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(yes}\OperatorTok{$}\NormalTok{credit_rating }\OperatorTok{==}\StringTok{ "excellent"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(yes) }\CommentTok{#P(credit=fair|prospect=yes)}
+\NormalTok{value[}\DecValTok{20}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(no}\OperatorTok{$}\NormalTok{credit_rating }\OperatorTok{==}\StringTok{ "excellent"}\NormalTok{)}\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(no)   }\CommentTok{#P(credit=excellent|prospect=no)}
+
+\CommentTok{#bind names and values}
+\NormalTok{q1 <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(name,value))}
+
+\CommentTok{#output as a table}
+\KeywordTok{kable}\NormalTok{(q1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+name & value\tabularnewline
+\midrule
+\endhead
+P(age-group=youth\textbar{}prospect=yes) &
+0.222222222222222\tabularnewline
+P(age-group=middle\textbar{}prospect=yes) &
+0.444444444444444\tabularnewline
+P(age-group=senior\textbar{}prospect=yes) &
+0.333333333333333\tabularnewline
+P(age-group=youth\textbar{}prospect=no) & 0.6\tabularnewline
+P(age-group=middle\textbar{}prospect=no) & 0\tabularnewline
+P(age-group=senior\textbar{}prospect=no) & 0.4\tabularnewline
+P(networth=high\textbar{}prospect=yes) &
+0.222222222222222\tabularnewline
+P(networth=low\textbar{}prospect=yes) & 0.333333333333333\tabularnewline
+P(networth=medium\textbar{}prospect=yes) &
+0.444444444444444\tabularnewline
+P(networth=high\textbar{}prospect=no) & 0.4\tabularnewline
+P(networth=low\textbar{}prospect=no) & 0.2\tabularnewline
+P(networth=medium\textbar{}prospect=no) & 0.4\tabularnewline
+P(status=employed\textbar{}prospect=yes) &
+0.333333333333333\tabularnewline
+P(status=employed\textbar{}prospect=no) & 0.8\tabularnewline
+P(status=unemployed\textbar{}prospect=yes) &
+0.666666666666667\tabularnewline
+P(status=unemployed\textbar{}prospect=no) & 0.2\tabularnewline
+P(credit=fair\textbar{}prospect=yes) & 0.666666666666667\tabularnewline
+P(credit=excellent\textbar{}prospect=no) & 0.4\tabularnewline
+P(credit=fair\textbar{}prospect=yes) & 0.333333333333333\tabularnewline
+P(credit=excellent\textbar{}prospect=no) & 0.6\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{\texorpdfstring{3 Assuming the assumptions of Naive Bayes
+are met, compute the posterior probability \(P(prospect|X)\) where X is
+one of the predictor
+variable.}{3 Assuming the assumptions of Naive Bayes are met, compute the posterior probability P(prospect\textbar{}X) where X is one of the predictor variable.}}\label{assuming-the-assumptions-of-naive-bayes-are-met-compute-the-posterior-probability-pprospectx-where-x-is-one-of-the-predictor-variable.}
+
+It appears as though the assumptions of naive bayes are satisfied in
+that sense that it is plausible that all of the categories of predictors
+are independent. It could be argued that things like ``networth'',
+``credit'' and ``employment'' are not independent in practice\ldots{}
+but here we will assume that they if only because I'd like to answer
+part 3 of the question.
+
+We will look at the posterior probability of credit given prospect.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prob.employed <-}\StringTok{ }\DecValTok{7}\OperatorTok{/}\DecValTok{14}
+\NormalTok{prob.unemployed <-}\StringTok{ }\DecValTok{1}\OperatorTok{-}\NormalTok{prob.employed}
+
+\NormalTok{prob.yes.given.employed <-}\StringTok{ }\NormalTok{value[[}\DecValTok{13}\NormalTok{]]}
+\NormalTok{prob.no.given.employed <-}\StringTok{ }\NormalTok{value[[}\DecValTok{14}\NormalTok{]]}
+\NormalTok{prob.yes.given.unemployed <-}\StringTok{ }\NormalTok{value[[}\DecValTok{15}\NormalTok{]]}
+\NormalTok{prob.no.given.unemployed <-}\StringTok{ }\NormalTok{value[[}\DecValTok{16}\NormalTok{]] }
+
+\NormalTok{prob.employed.given.yes <-}\StringTok{ }\NormalTok{(prob.yes.given.employed }\OperatorTok{*}\StringTok{ }\NormalTok{prob.employed )}\OperatorTok{/}\NormalTok{((prob.yes.given.employed }\OperatorTok{*}\NormalTok{prob.employed) }\OperatorTok{+}\StringTok{ }\NormalTok{(prob.yes.given.unemployed }\OperatorTok{*}\StringTok{ }\NormalTok{prob.unemployed)) }
+
+\NormalTok{prob.employed.given.no <-}\StringTok{  }\NormalTok{(prob.yes.given.unemployed }\OperatorTok{*}\StringTok{ }\NormalTok{prob.unemployed) }\OperatorTok{/}\NormalTok{((prob.yes.given.employed }\OperatorTok{*}\NormalTok{prob.employed) }\OperatorTok{+}\StringTok{ }\NormalTok{(prob.yes.given.unemployed }\OperatorTok{*}\StringTok{ }\NormalTok{prob.unemployed)) }
+
+
+\NormalTok{prob.unemployed.given.yes <-}\StringTok{ }\DecValTok{1}\OperatorTok{-}\NormalTok{prob.employed.given.yes}
+\NormalTok{prob.unemployed.given.no <-}\StringTok{ }\DecValTok{1}\OperatorTok{-}\NormalTok{prob.employed.given.no}
+
+\NormalTok{e <-}\StringTok{ }\KeywordTok{c}\NormalTok{(prob.employed.given.yes,prob.employed.given.no)}
+\NormalTok{u <-}\StringTok{ }\KeywordTok{c}\NormalTok{(prob.unemployed.given.yes,prob.unemployed.given.no)}
+
+\NormalTok{out <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(e,u)}
+
+\KeywordTok{row.names}\NormalTok{(out) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Prospect.Yes"}\NormalTok{, }\StringTok{"Prospect.No"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(out) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Employed"}\NormalTok{,}\StringTok{"Unemployed"}\NormalTok{)}
+
+\KeywordTok{kable}\NormalTok{(out)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule
+& Employed & Unemployed\tabularnewline
+\midrule
+\endhead
+Prospect.Yes & 0.3333333 & 0.6666667\tabularnewline
+Prospect.No & 0.6666667 & 0.3333333\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Question 2}\label{question-2}
+
+You just recently joined a datascience team.
+
+There are two datasets junk1.txt and junk2.csv They have two options 1.
+They can go back to the client and ask for more data to remedy problems
+with the data. 2. They can accept the data and undertake a major
+analytics exercise.
+
+The team is relying on your dsc skills to determine how they should
+proceed.
+
+Can you explore the data and recommend actions for each file enumerating
+the reasons.
+
+\subsubsection{Initial Observations}\label{initial-observations}
+
+Upon loading the files I note that they have different extentions and
+different delimiters, despite looking reasonably similar otherwise. The
+inconsistencies between these 2 files would probably cause me to
+approach them with a higher level of scrutiny than would otherwise be
+the case.
+
+In addition, I would likely request additional data regarding the
+context of the data. What is the process that produces these data? What
+info is there available about the origin of the data. This data would be
+the basis for forming some intuition about the data - intuition is
+essential in data science.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#load the data}
+\NormalTok{junk1 <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/junk1.txt"}\NormalTok{, }\DataTypeTok{header=}\NormalTok{T,}\DataTypeTok{sep =} \StringTok{" "}\NormalTok{)}
+\NormalTok{junk2 <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/junk2.csv"}\NormalTok{, }\DataTypeTok{header=}\NormalTok{T, }\DataTypeTok{sep =} \StringTok{","}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Inspect the data}\label{inspect-the-data}
+
+In both cases we have data in ``long'' format where each each row
+contains a full set of observations or a ``case''. We have variables
+``a'' \& ``b'' which are floating point and apparently continuous and a
+``class'' variable which appears to be an integer and based on the name,
+likely a categorical variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(junk1,}\DecValTok{5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rrr@{}}
+\toprule
+a & b & class\tabularnewline
+\midrule
+\endhead
+1.6204214 & 3.0036241 & 1\tabularnewline
+1.4340220 & 0.7852487 & 1\tabularnewline
+2.4766615 & 0.9367761 & 1\tabularnewline
+0.5283093 & 0.1196222 & 1\tabularnewline
+1.0054081 & 0.7872866 & 1\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(junk2,}\DecValTok{5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rrr@{}}
+\toprule
+a & b & class\tabularnewline
+\midrule
+\endhead
+3.1886481 & 0.9291774 & 0\tabularnewline
+0.8224527 & 0.0476031 & 0\tabularnewline
+0.8147247 & 0.0291093 & 0\tabularnewline
+-1.5065362 & 3.1323136 & 0\tabularnewline
+0.4426887 & 2.8494282 & 0\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{Look for missing cases}\label{look-for-missing-cases}
+
+Next we check for missing values and find that there are no incomplete
+cases in either of the files.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missing.data <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\KeywordTok{sum}\NormalTok{(}\OperatorTok{!}\KeywordTok{complete.cases}\NormalTok{(junk1)),}\KeywordTok{sum}\NormalTok{(}\OperatorTok{!}\KeywordTok{complete.cases}\NormalTok{(junk2))))}
+\KeywordTok{row.names}\NormalTok{(missing.data) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Junk1"}\NormalTok{,}\StringTok{"Junk2"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(missing.data) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Number of Missing Values"}\NormalTok{)}
+
+\KeywordTok{kable}\NormalTok{(missing.data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule
+& Number of Missing Values\tabularnewline
+\midrule
+\endhead
+Junk1 & 0\tabularnewline
+Junk2 & 0\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{Summary Statistics}\label{summary-statistics}
+
+Now we compute summary statistics for reference. It may be difficult to
+deduce anything from the summary stats alone without actually inspecting
+the data visually, however, we compute them now so that we can refer
+back to them as needed.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{describe}\NormalTok{(junk1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       vars   n mean   sd median trimmed  mad   min  max range skew kurtosis
+## a        1 100 0.05 1.27  -0.05    0.03 1.47 -2.30 3.01  5.30 0.13    -0.80
+## b        2 100 0.01 1.45  -0.07   -0.02 1.49 -3.17 3.10  6.27 0.12    -0.53
+## class    3 100 1.50 0.50   1.50    1.50 0.74  1.00 2.00  1.00 0.00    -2.02
+##         se
+## a     0.13
+## b     0.14
+## class 0.05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{describe}\NormalTok{(junk2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       vars    n  mean   sd median trimmed  mad   min  max range  skew kurtosis
+## a        1 4000 -0.05 1.30   0.09   -0.02 1.40 -4.17 4.63  8.79 -0.17    -0.34
+## b        2 4000  0.06 1.31  -0.08    0.03 1.39 -3.90 4.31  8.22  0.21    -0.35
+## class    3 4000  0.06 0.24   0.00    0.00 0.00  0.00 1.00  1.00  3.61    11.06
+##         se
+## a     0.02
+## b     0.02
+## class 0.00
+\end{verbatim}
+
+\subsubsection{Visualize the Data}\label{visualize-the-data}
+
+From the plots below we can see that:
+
+\paragraph{Junk1}\label{junk1}
+
+\begin{itemize}
+\tightlist
+\item
+  Both A and B appear to be reasonably normally distributed around zero.
+  B appears to be bi-modal however this is likely a resolution issue due
+  to small sample size. Density plots are also shown as they better
+  illustrate the shape of the distributions given the sample size.
+\item
+  The pairs plot shows that A and B appear to be uncorrelated
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{junk1 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{gather}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(value)) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{key, }\DataTypeTok{scales =} \StringTok{"free"}\NormalTok{) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins=}\DecValTok{100}\NormalTok{)}\OperatorTok{+}
+\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Junk1 - Histograms"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{junk1 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{gather}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(value)) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{key, }\DataTypeTok{scales =} \StringTok{"free"}\NormalTok{) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{geom_density}\NormalTok{()}\OperatorTok{+}
+\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Junk1 - Density Plots"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-10-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(junk1}\OperatorTok{$}\NormalTok{a,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(junk1}\OperatorTok{$}\NormalTok{b,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(junk1}\OperatorTok{$}\NormalTok{class,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-10-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pairs}\NormalTok{(junk1, }\DataTypeTok{main=}\StringTok{"Junk1 Pairs Plot"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-10-4.pdf}
+
+\paragraph{Junk2}\label{junk2}
+
+\begin{itemize}
+\tightlist
+\item
+  Similar story between Junk1 and Junk2, however, in the distributions
+  of A and B almost look like mirror images of one another.
+\item
+  The timeseries makes it look as if A \& B from Junk2 may be samples
+  from several distinct processes. Series A has a level change at point
+  1000 and a level AND variability change at point 3000. Series B has
+  similar changes at point 2000 and point 3000 respectively.
+\item
+  If we knew more about the process it might make sense to align
+  a{[}1:1000{]} and b{[}2001:3000{]}, a{[}1000:3000{]} and
+  b{[}1:2000{]}, a{[}3000:end{]}, b{[}3000:end{]}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{junk2 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{gather}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(value)) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{key, }\DataTypeTok{scales =} \StringTok{"free"}\NormalTok{) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{geom_histogram}\NormalTok{()}\OperatorTok{+}
+\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Junk2 - Histograms"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+\end{verbatim}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{junk2 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{gather}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(value)) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{key, }\DataTypeTok{scales =} \StringTok{"free"}\NormalTok{) }\OperatorTok{+}
+\StringTok{    }\KeywordTok{geom_density}\NormalTok{()}\OperatorTok{+}
+\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Junk2 - Density Plots"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-11-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(junk2}\OperatorTok{$}\NormalTok{a,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(junk2}\OperatorTok{$}\NormalTok{b,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(junk2}\OperatorTok{$}\NormalTok{class,}\DataTypeTok{type=}\StringTok{'l'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-11-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pairs}\NormalTok{(junk2, }\DataTypeTok{main=}\StringTok{"Junk2 Pairs Plot"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-11-4.pdf}
+
+\subsubsection{Overall Assessment}\label{overall-assessment}
+
+I would request more information about the context and process to help
+drive context about the data. Otherwise we see that
+
+\begin{itemize}
+\tightlist
+\item
+  The data appear to be similar to one another (junk1,junk2) and appea
+  to be gaussian with a mean of apporx zero.
+\item
+  The data appear to be normally distributed in both cases
+\item
+  The data appear to be uncorrelated
+\item
+  The line-plot for data be shows a strange pattern which makes me
+  wonder whether A and B might be reported out of synch or something
+\end{itemize}
+
+\subsubsection{Reccomendations}\label{reccomendations}
+
+-Determine whether these two data sets can be combined (based only on
+the character of the data, it appears yes) -Determine why the variance
+in Junk2 isn't stable and either transform (standarize variables using
+BoxCox, for example) or re-organize into more variables as appropriate
+
+\subsection{Question 3}\label{question-3}
+
+Read the icu.csv subset it with these 5 features in the formula and STA
+is the labelcol. - Split the icu 70/30 train/test and - run the kNN.R
+for K=(3,5,7,15,25,50)
+
+Submit the result confusionMatrix, Accuracy for each K \& Plot Accuracy
+vs K.
+
+write a short summary of your findings.
+
+\subsubsection{Load ICU}\label{load-icu}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{icu <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/plb2018/DATA622/master/homework1/data/icu.csv"}\NormalTok{, }\DataTypeTok{header=}\NormalTok{T, }\DataTypeTok{sep =} \StringTok{","}\NormalTok{)}
+
+\CommentTok{#add coma variable as per instructions}
+\NormalTok{icu}\OperatorTok{$}\NormalTok{COMA <-}\StringTok{ }\DecValTok{0}
+\NormalTok{icu}\OperatorTok{$}\NormalTok{COMA[icu}\OperatorTok{$}\NormalTok{LOC }\OperatorTok{==}\StringTok{ }\DecValTok{2}\NormalTok{] <-}\DecValTok{1}
+
+\CommentTok{#subset keeping STA as the LAST column}
+\NormalTok{knn.in <-}\StringTok{ }\NormalTok{icu[}\KeywordTok{c}\NormalTok{(}\StringTok{"TYP"}\NormalTok{,}\StringTok{"COMA"}\NormalTok{,}\StringTok{"AGE"}\NormalTok{,}\StringTok{"INF"}\NormalTok{,}\StringTok{"STA"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Load KNN.r}\label{load-knn.r}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{euclideanDist <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(a, b)\{}
+\NormalTok{  d =}\StringTok{ }\DecValTok{0}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(a)) ))}
+\NormalTok{  \{}
+\NormalTok{    d =}\StringTok{ }\NormalTok{d }\OperatorTok{+}\StringTok{ }\NormalTok{(a[[i]]}\OperatorTok{-}\NormalTok{b[[i]])}\OperatorTok{^}\DecValTok{2}
+\NormalTok{  \}}
+\NormalTok{  d =}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(d)}
+  \KeywordTok{return}\NormalTok{(d)}
+\NormalTok{\}}
+
+\NormalTok{knn_predict2 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(test_data, train_data, k_value, labelcol)\{}
+\NormalTok{  pred <-}\StringTok{ }\KeywordTok{c}\NormalTok{()  }\CommentTok{#empty pred vector }
+  \CommentTok{#LOOP-1}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(test_data)))\{   }\CommentTok{#looping over each record of test data}
+\NormalTok{    eu_dist =}\KeywordTok{c}\NormalTok{()          }\CommentTok{#eu_dist & eu_char empty  vector}
+\NormalTok{    eu_char =}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{    good =}\StringTok{ }\DecValTok{0}              \CommentTok{#good & bad variable initialization with 0 value}
+\NormalTok{    bad =}\StringTok{ }\DecValTok{0}
+    
+    \CommentTok{#LOOP-2-looping over train data }
+    \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(train_data)))\{}
+ 
+      \CommentTok{#adding euclidean distance b/w test data point and train data to eu_dist vector}
+\NormalTok{      eu_dist <-}\StringTok{ }\KeywordTok{c}\NormalTok{(eu_dist, }\KeywordTok{euclideanDist}\NormalTok{(test_data[i,}\OperatorTok{-}\KeywordTok{c}\NormalTok{(labelcol)], train_data[j,}\OperatorTok{-}\KeywordTok{c}\NormalTok{(labelcol)]))}
+ 
+      \CommentTok{#adding class variable of training data in eu_char}
+\NormalTok{      eu_char <-}\StringTok{ }\KeywordTok{c}\NormalTok{(eu_char, }\KeywordTok{as.character}\NormalTok{(train_data[j,][[labelcol]]))}
+\NormalTok{    \}}
+    
+\NormalTok{    eu <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(eu_char, eu_dist) }\CommentTok{#eu dataframe created with eu_char & eu_dist columns}
+ 
+\NormalTok{    eu <-}\StringTok{ }\NormalTok{eu[}\KeywordTok{order}\NormalTok{(eu}\OperatorTok{$}\NormalTok{eu_dist),]       }\CommentTok{#sorting eu dataframe to gettop K neighbors}
+\NormalTok{    eu <-}\StringTok{ }\NormalTok{eu[}\DecValTok{1}\OperatorTok{:}\NormalTok{k_value,]               }\CommentTok{#eu dataframe with top K neighbors}
+ 
+\NormalTok{    tbl.sm.df<-}\KeywordTok{table}\NormalTok{(eu}\OperatorTok{$}\NormalTok{eu_char)}
+\NormalTok{    cl_label<-}\StringTok{  }\KeywordTok{names}\NormalTok{(tbl.sm.df)[[}\KeywordTok{as.integer}\NormalTok{(}\KeywordTok{which.max}\NormalTok{(tbl.sm.df))]]}
+    
+\NormalTok{    pred <-}\StringTok{ }\KeywordTok{c}\NormalTok{(pred, cl_label)}
+\NormalTok{    \}}
+    \KeywordTok{return}\NormalTok{(pred) }\CommentTok{#return pred vector}
+\NormalTok{  \}}
+  
+
+\NormalTok{accuracy <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(test_data,labelcol,predcol)\{}
+\NormalTok{  correct =}\StringTok{ }\DecValTok{0}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(test_data)))\{}
+    \ControlFlowTok{if}\NormalTok{(test_data[i,labelcol] }\OperatorTok{==}\StringTok{ }\NormalTok{test_data[i,predcol])\{ }
+\NormalTok{      correct =}\StringTok{ }\NormalTok{correct}\OperatorTok{+}\DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{  accu =}\StringTok{ }\NormalTok{(correct}\OperatorTok{/}\KeywordTok{nrow}\NormalTok{(test_data)) }\OperatorTok{*}\StringTok{ }\DecValTok{100}  
+  \KeywordTok{return}\NormalTok{(accu)}
+\NormalTok{\}}
+
+\CommentTok{#load data}
+\NormalTok{knn.df<-}\StringTok{ }\NormalTok{knn.in}
+\NormalTok{labelcol <-}\StringTok{ }\DecValTok{5} \CommentTok{# for iris it is the fifth col }
+\NormalTok{predictioncol<-labelcol}\OperatorTok{+}\DecValTok{1}
+
+\CommentTok{# create train/test partitions}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{n<-}\KeywordTok{nrow}\NormalTok{(knn.df)}
+\NormalTok{knn.df<-}\StringTok{ }\NormalTok{knn.df[}\KeywordTok{sample}\NormalTok{(n),]}
+
+\NormalTok{train.df <-}\StringTok{ }\NormalTok{knn.df[}\DecValTok{1}\OperatorTok{:}\KeywordTok{as.integer}\NormalTok{(}\FloatTok{0.7}\OperatorTok{*}\NormalTok{n),]}
+
+\NormalTok{k.values <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{15}\NormalTok{,}\DecValTok{25}\NormalTok{,}\DecValTok{50}\NormalTok{)}
+
+\NormalTok{acc <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (kval }\ControlFlowTok{in}\NormalTok{ k.values )\{}
+
+\NormalTok{  K =}\StringTok{ }\NormalTok{kval }\CommentTok{# number of neighbors to determine the class}
+  \KeywordTok{table}\NormalTok{(train.df[,labelcol])}
+\NormalTok{  test.df <-}\StringTok{ }\NormalTok{knn.df[}\KeywordTok{as.integer}\NormalTok{(}\FloatTok{0.7}\OperatorTok{*}\NormalTok{n }\OperatorTok{+}\DecValTok{1}\NormalTok{)}\OperatorTok{:}\NormalTok{n,]}
+  \KeywordTok{table}\NormalTok{(test.df[,labelcol])}
+  
+\NormalTok{  predictions <-}\StringTok{ }\KeywordTok{knn_predict2}\NormalTok{(test.df, train.df, K,labelcol) }\CommentTok{#calling knn_predict()}
+  
+\NormalTok{  test.df[,predictioncol] <-}\StringTok{ }\NormalTok{predictions }\CommentTok{#Adding predictions in test data as 7th column}
+  \KeywordTok{print}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(}\StringTok{"The accuracy for K="}\NormalTok{,K,}\StringTok{" is "}\NormalTok{,}\KeywordTok{accuracy}\NormalTok{(test.df,labelcol,predictioncol)))}
+  \KeywordTok{print}\NormalTok{(}\StringTok{"The Confustion Matrix is:"}\NormalTok{)}
+  \KeywordTok{print}\NormalTok{(}\KeywordTok{table}\NormalTok{(test.df[[predictioncol]],test.df[[labelcol]]))}
+  
+\NormalTok{  acc <-}\StringTok{ }\KeywordTok{c}\NormalTok{(acc,}\KeywordTok{accuracy}\NormalTok{(test.df,labelcol,predictioncol))}
+
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The accuracy for K=3 is 80"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 48  7
+##   1  5  0
+## [1] "The accuracy for K=5 is 85"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 50  6
+##   1  3  1
+## [1] "The accuracy for K=7 is 83.3333333333333"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 50  7
+##   1  3  0
+## [1] "The accuracy for K=15 is 88.3333333333333"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 53  7
+## [1] "The accuracy for K=25 is 88.3333333333333"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 53  7
+## [1] "The accuracy for K=50 is 88.3333333333333"
+## [1] "The Confustion Matrix is:"
+##    
+##      0  1
+##   0 53  7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(acc,}\DataTypeTok{main=}\StringTok{"Accuracy Plot"}\NormalTok{,}
+        \DataTypeTok{xlab=}\StringTok{"Value of K"}\NormalTok{,}
+        \DataTypeTok{ylab=}\StringTok{"Accuracy"}\NormalTok{,}
+        \DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+
+
+
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DataTypeTok{at=}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{,}\DataTypeTok{labels =}\NormalTok{ k.values)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Data622_Homework1_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\subsubsection{Summary}\label{summary}
+
+Here I was able to successfully run the code as per the instructions. In
+this case (i.e.~ICU data) we can see that accuracy continues to climb
+intul it reaches 15, where it remains steady.
+
+\end{document}

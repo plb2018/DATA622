@@ -3,21 +3,26 @@ title: 'Data 2 - Homework #1'
 author: "Paul Britton"
 date: '2020-04-02'
 output:
+  pdf_document:
+    toc: yes
+  html_notebook:
+    toc: yes
   html_document:
     df_print: paged
     toc: yes
     toc_collapsed: yes
     toc_float: yes
-  html_notebook:
-    toc: yes
-  pdf_document:
-    toc: yes
 theme: lumen
 number_sections: yes
 toc_depth: 3
 ---
 
-```{r load.requirements, warning = FALSE, message = FALSE,cache=FALSE}
+
+The rpubs version of this work can be found [here](https://rpubs.com/plb_lttfer/593848), and source/data can be found on github [here](https://github.com/plb2018/DATA622/tree/master/homework1).
+ 
+
+
+```{r load.requirements, warning = FALSE, message = FALSE,cache=FALSE, echo=FALSE}
 #clear the workspace
 rm(list = ls())
 
@@ -30,8 +35,6 @@ library(psych)
 library(tidyr)
 library(ggplot2)
 
-#clear out the cache
-clean_cache(clean = TRUE, path = opts_chunk$get("cache.path"))
 ```
 
 
@@ -452,9 +455,6 @@ plot(acc,main="Accuracy Plot",
 
 axis(1,at=1:6,labels = k.values)
 
-head(knn.df)
-print(acc)
-print(test.df)
 ```
 
 ### Summary
