@@ -1,0 +1,25 @@
+	AUC		ACC		TPR		FPR
+
+KNN	0.5277778	0.6000000	0.8888889	0.1666667
+Tree	0.5000000	0.5333333	0.6666667	0.5000000
+NB	0.5555556	0.6000000	0.7777778	0.3333333
+LDA	0.5555556	0.6000000	0.7777778	0.3333333
+LR	0.5555556	0.6000000	0.7777778	0.3333333
+SVM	0.5000000	0.5333333	0.6666667	0.5000000
+
+
+-Immediately out of the gate, I note that the data-set is likely too small, especially if performing a train/test split.  I expect all of the results to be unstable due to this fact.  It's not an issue in this instance as this is a learning exercise, but in a real-world application, I would likely make the determination that the data size is insufficient.
+
+- All of the models tested have reasonably similar AUC near 50% indicating that they all have an approximately random change of correctly classifying Black vs. Blue
+
+- Accuracy is around 60% on average, however I suspect that this may be due to the bias in the data rather than accurate models. The base-rate is around 60% and so, by selecting "black" every time would yield similar results - the same goes for the TPR and FPR.
+
+-I suspect that KNN is not well suited to this kind of data based on the way that the data it laid out (I recall that we looked at it in class).
+
+-Logistic Regression may be a reasonable alternative as this is a binary classification task and it's a quick and reasonably intuitive metiod, however, LDA even though this is a binary problem, LDA may be a better alternative due to the apparent class separation (potentially an issue for LR).  I note that both of these algos are in the top performers
+
+-I think Naieve Bayes is a suitable choice here as it needs less training and the small sample size will be less of an issue in making meaningful predictions (as compared to something like LR). This is the route i would likely take here as it is simple and easy to understand (i.e. intuitive), easy to update, even by hand, and yet powerful.
+
+-SVM is well suited here in the sense that we have an apparently messy problem binary classification problem.  My gut feel is that it may be overkill and better suited to a similar problem with more features (as compared the other techniques looked at here).  However, I'm not really sure, and I intend to play around with this a bit more and see what I can learn!
+
+

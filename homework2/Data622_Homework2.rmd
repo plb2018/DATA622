@@ -1,0 +1,213 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Homework 2
+
+```{r}
+#clear the workspace
+rm(list = ls())
+
+##load the package class
+library(class)
+library(MASS)
+library(e1071)
+library(tree)
+library(ROCR)
+library(pROC)
+library(caret)
+library(knitr)
+```
+
+### Load the Data
+
+```{r}
+
+df <- read.csv("C:/Users/Paul/OneDrive - CUNY School of Professional Studies/CUNY/DATA 622/homework2/data.txt")
+
+kable(df)
+
+myLetters <- letters[1:26]
+
+#encode the letters from col Y as numbers
+df$Y <- match(df$Y, myLetters)
+
+
+n <-  floor(0.60 * nrow(df))
+idx <- sample(seq_len(nrow(df)), size = n)
+train <- df[idx, ]
+test <- df[-idx, ]
+
+## housekeeping 
+
+accuracy <- function(x){sum(diag(x)/(sum(rowSums(x))))}
+tpr.f <- function(x){x[1,1] / sum(x[,1])}
+fpr.f <- function(x){x[2,1] / sum(x[,2])}
+
+AUC <- data.frame()
+ACC <- data.frame()
+TPR <- data.frame() 
+FPR <- data.frame()
+
+```
+
+
+
+Run kNN, Tree, NB, LDA and LR, SVM with RBS Kernel (60%) and 
+
+
+### Knn
+
+```{r}
+knn.model <- knn(train[,c("X","Y")],test[,c("X","Y")],cl=train[,c("label")],k=3)
+knn.cm <- table(knn.model,test[,c("label")])
+knn.cm  
+
+knn.pred <- prediction(as.numeric(knn.model) ,test$label)
+knn.perf <- performance(knn.pred,measure="tpr",x.measure="fpr")
+
+AUC <- rbind(AUC,performance(knn.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(knn.cm))[1]
+TPR <- rbind(TPR,tpr.f(knn.cm))
+FPR <- rbind(FPR,fpr.f(knn.cm))
+
+
+```
+
+### Tree
+```{r}
+tree.model = tree(label ~ ., data=train)
+tree.test = predict(tree.model, newdata=test,type="class")
+tree.cm <- table(tree.test,test$label)
+tree.cm
+
+tree.pred <- prediction(as.numeric(tree.test) ,test$label)
+tree.perf <- performance(tree.pred,measure="tpr",x.measure="fpr")
+
+AUC <- rbind(AUC,performance(tree.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(tree.cm))[1]
+TPR <- rbind(TPR,tpr.f(tree.cm))
+FPR <- rbind(FPR,fpr.f(tree.cm))
+
+
+
+```
+
+### NB
+```{r}
+bm.model = train(train[,c("X","Y")],train$label,'nb',trControl=trainControl(method='cv',number=10))
+
+test.bm= predict(bm.model, newdata=test)
+bm.cm <- table(test.bm,test[,c("label")])
+
+bm.cm
+
+
+bm.pred <- prediction(as.numeric(test.bm) ,test$label)
+bm.perf <- performance(bm.pred,measure="tpr",x.measure="fpr")
+
+AUC <- rbind(AUC,performance(bm.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(bm.cm))[1]
+TPR <- rbind(TPR,tpr.f(bm.cm))
+FPR <- rbind(FPR,fpr.f(bm.cm))
+
+
+
+```
+
+### LDA
+```{r}
+prior <- sum(train$label == "BLACK")/nrow(train)
+
+lda.model <- lda(label ~ .,data=train,prior=c(prior,1-prior))
+
+lda.test = predict(lda.model, newdata=test)
+
+lda.cm <- table(Predicted=lda.test$class, label=test$label)
+lda.cm
+
+lda.pred <- prediction(as.numeric(lda.test$class) ,test$label)
+lda.perf <- performance(lda.pred,measure="tpr",x.measure="fpr")
+
+
+AUC <- rbind(AUC,performance(lda.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(lda.cm))[1]
+TPR <- rbind(TPR,tpr.f(lda.cm))
+FPR <- rbind(FPR,fpr.f(lda.cm))
+
+```
+
+### LR
+```{r}
+
+lr.model <- glm(label ~ ., data=train,family = "binomial")
+lr.test = predict(lr.model, newdata=test,type="response")
+
+lr.cm <- table(lr.test > 0.5,test$label)
+lr.cm
+
+lr.pred <- prediction(as.numeric(lr.test > 0.5),test$label)
+lr.perf <- performance(lr.pred,measure="tpr",x.measure="fpr")
+
+
+AUC <- rbind(AUC,performance(lr.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(lr.cm))[1]
+TPR <- rbind(TPR,tpr.f(lr.cm))
+FPR <- rbind(FPR,fpr.f(lr.cm))
+
+```
+
+### SVM
+```{r}
+
+svm.model = svm(label ~ ., data = train, kernel = "radial", cost = 10, scale = FALSE)
+
+svm.test = predict(svm.model, newdata=test)
+svm.cm <- table(Predicted=svm.test, label=test$label)
+svm.cm
+
+
+svm.pred <- prediction(as.numeric(svm.test),test$label)
+svm.perf <- performance(svm.pred,measure="tpr",x.measure="fpr")
+
+
+AUC <- rbind(AUC,performance(svm.pred,"auc")@y.values[[1]])
+ACC <- rbind(ACC,accuracy(svm.cm))[1]
+TPR <- rbind(TPR,tpr.f(svm.cm))
+FPR <- rbind(FPR,fpr.f(svm.cm))
+
+
+```
+
+### Summary
+
+```{r}
+
+output <- cbind(AUC,ACC,TPR, FPR)
+
+colnames(output) <- c("AUC","ACC","TPR","FPR")
+row.names(output) <- c("KNN","Tree","NB","LDA","LR","SVM")
+
+output
+```
+
+#### Comments
+
+-Immediately out of the gate, I note that the data-set is likely too small, especially if performing a train/test split.  I expect all of the results to be unstable due to this fact.  It's not an issue in this instance as this is a learning exercise, but in a real-world application, I would likely make the determination that the data size is insufficient.
+
+- All of the models tested have reasonably similar AUC near 50% indicating that they all have an approximately random change of correctly classifying Black vs. Blue
+
+- Accuracy is around 60% on average, however I suspect that this may be due to the bias in the data rather than accurate models. The base-rate is around 60% and so, by selecting "black" every time would yield similar results - the same goes for the TPR and FPR.
+
+-I suspect that KNN is not well suited to this kind of data based on the way that the data it laid out (I recall that we looked at it in class).
+
+-Logistic Regression may be a reasonable alternative as this is a binary classification task and it's a quick and reasonably intuitive metiod, however, LDA even though this is a binary problem, LDA may be a better alternative due to the apparent class separation (potentially an issue for LR).  I note that both of these algos are in the top performers
+
+-I think Naieve Bayes is a suitable choice here as it needs less training and the small sample size will be less of an issue in making meaningful predictions (as compared to something like LR). This is the route i would likely take here as it is simple and easy to understand (i.e. intuitive), easy to update, even by hand, and yet powerful.
+
+-SVM is well suited here in the sense that we have an apparently messy problem binary classification problem.  My gut feel is that it may be overkill and better suited to a similar problem with more features (as compared the other techniques looked at here).  However, I'm not really sure, and I intend to play around with this a bit more and see what I can learn!
+
+
