@@ -1,0 +1,53 @@
+this  assignment you do not have to write any R script.
+
+No programming but function as a senior data scientist.
+
+here is some background:
+
+You hired Kansales Ruffio as a summer intern in winter for his ML and R hacking skills.
+
+You asked him to analyze a dataset from the internet. You provided him a training and test data partitions.
+
+KR bolted for 2/3 weeks showing up in his cubicle after 3 PM and working until you arrived in the office
+
+at 7 AM. Then, Ruffio showed up at 8 AM with an email to you saying he analyzed the dataset
+
+using several algorithms consistent with both No Free Lunch theorem and Occam's Razor.
+
+He claims you can simply source the R script which will create two files with confusion matrices
+
+and performance measures for classifiers.
+
+As his mentor and guide,
+
+1) you can  provide feedback how he can improve his approach to  data science.
+
+2) You may also identify and justify the choice of classifiers Ruffio ran to complete this task.
+
+3) You can compare the performance metrics of classifiers and provide an explanation for the observed performance variances.
+
+Ruffio can be given a pass grade if the script can be sourced free of errors.
+
+There are five files attached
+
+vglm_lda_script.txt is R script you can run on IBM without any modification
+
+the two output files that script generates
+
+and two data files for training and testing that Ruffio used.
+
+You do not have to do any work on IBM Cloud you can run without lifting a finger 
+
+But as per agreement I have uploaded it here -- now you have to make sure paths are
+
+consistent. 
+
+I will be reviewing the R code during the next two weeks during meetups
+
+while you will be analyzing the output
+
+and explaining the performance based on the kind of classifier used.
+
+Thank you
+
+Raman

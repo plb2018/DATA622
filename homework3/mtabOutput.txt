@@ -1,0 +1,174 @@
+[[1]]
+                       
+bag_class_probabilities acc good unacc vgood
+                  acc   117    1     5     1
+                  good    1   21     1     0
+                  unacc   3    0   346     0
+                  vgood   0    1     0    21
+
+[[2]]
+                   
+gbm_predicted_class acc good unacc vgood
+              acc   115    0     5     1
+              good    4   20     1     0
+              unacc   2    0   346     0
+              vgood   0    3     0    21
+
+[[3]]
+       
+        unacc acc vgood good
+  unacc   347   2     0    0
+  acc       4 115     1    0
+  vgood     0   0    21    3
+  good      1   4     0   20
+
+[[4]]
+       
+        unacc acc vgood good
+  unacc   347   1     0    0
+  acc       4 117     1    1
+  vgood     0   0    21    2
+  good      1   3     0   20
+
+[[5]]
+       
+        acc good unacc vgood
+  acc   107   12    25     9
+  good    5    9     0     0
+  unacc   9    0   327     0
+  vgood   0    2     0    13
+
+[[6]]
+ [1] "[[1]]"                                         
+ [2] "                       "                       
+ [3] "bag_class_probabilities acc good unacc vgood"  
+ [4] "                  acc   118    2     1     1"  
+ [5] "                  good    1   20     1     0"  
+ [6] "                  unacc   2    0   350     0"  
+ [7] "                  vgood   0    1     0    21"  
+ [8] ""                                              
+ [9] "[[2]]"                                         
+[10] "                   "                           
+[11] "gbm_predicted_class acc good unacc vgood"      
+[12] "              acc   115    0     6     1"      
+[13] "              good    4   20     1     0"      
+[14] "              unacc   2    0   345     0"      
+[15] "              vgood   0    3     0    21"      
+[16] ""                                              
+[17] "[[3]]"                                         
+[18] "       "                                       
+[19] "        unacc acc vgood good"                  
+[20] "  unacc   346   2     0    0"                  
+[21] "  acc       5 115     1    0"                  
+[22] "  vgood     0   0    21    3"                  
+[23] "  good      1   4     0   20"                  
+[24] ""                                              
+[25] "[[4]]"                                         
+[26] "       "                                       
+[27] "        unacc acc vgood good"                  
+[28] "  unacc   347   1     0    0"                  
+[29] "  acc       4 117     1    1"                  
+[30] "  vgood     0   0    21    3"                  
+[31] "  good      1   3     0   19"                  
+[32] ""                                              
+[33] "[[5]]"                                         
+[34] "       "                                       
+[35] "        acc good unacc vgood"                  
+[36] "  acc   107   12    25     9"                  
+[37] "  good    5    9     0     0"                  
+[38] "  unacc   9    0   327     0"                  
+[39] "  vgood   0    2     0    13"                  
+[40] ""                                              
+[41] "[[6]]"                                         
+[42] "       "                                       
+[43] "rf_pred acc good unacc vgood"                  
+[44] "  acc   118    3     9     3"                  
+[45] "  good    1   17     0     0"                  
+[46] "  unacc   2    0   343     0"                  
+[47] "  vgood   0    3     0    19"                  
+[48] ""                                              
+[49] "[[7]]"                                         
+[50] "                         "                     
+[51] "rpart_class_probabilities acc good unacc vgood"
+[52] "                    acc   106    0    14     5"
+[53] "                    good   10   20     1     0"
+[54] "                    unacc   4    0   337     0"
+[55] "                    vgood   1    3     0    17"
+[56] ""                                              
+[57] "[[8]]"                                         
+[58] "         "                                     
+[59] "vglm_pred acc good unacc vgood"                
+[60] "    acc   106    4    15     0"                
+[61] "    good    3   17     0     0"                
+[62] "    unacc  10    0   337     0"                
+[63] "    vgood   2    2     0    22"                
+[64] ""                                              
+[65] "[[9]]"                                         
+[66] "        "                                      
+[67] "xgb_pred acc good unacc vgood"                 
+[68] "       1 121   23    71    22"                 
+[69] "       3   0    0   281     0"                 
+[70] ""                                              
+[71] "[[10]]"                                        
+[72] "         "                                     
+[73] "xgb_pred4 acc good unacc vgood"                
+[74] "    acc   100    6    24    12"                
+[75] "    good    3   11     1     0"                
+[76] "    unacc  18    3   327     0"                
+[77] "    vgood   0    3     0    10"                
+[78] ""                                              
+[79] "[[11]]"                                        
+[80] "         "                                     
+[81] "xgb_pred5 acc good unacc vgood"                
+[82] "    acc   109    0     8     6"                
+[83] "    good    4   17     1     0"                
+[84] "    unacc   7    3   343     0"                
+[85] "    vgood   1    3     0    16"                
+[86] ""                                              
+
+[[7]]
+       
+rf_pred acc good unacc vgood
+  acc   118    3     5     4
+  good    0   17     0     0
+  unacc   3    0   347     0
+  vgood   0    3     0    18
+
+[[8]]
+                         
+rpart_class_probabilities acc good unacc vgood
+                    acc   106    0    14     5
+                    good   10   20     1     0
+                    unacc   4    0   337     0
+                    vgood   1    3     0    17
+
+[[9]]
+         
+vglm_pred acc good unacc vgood
+    acc   106    4    15     0
+    good    3   17     0     0
+    unacc  10    0   337     0
+    vgood   2    2     0    22
+
+[[10]]
+        
+xgb_pred acc good unacc vgood
+       1 121   23    71    22
+       3   0    0   281     0
+
+[[11]]
+         
+xgb_pred4 acc good unacc vgood
+    acc   100    6    24    12
+    good    3   11     1     0
+    unacc  18    3   327     0
+    vgood   0    3     0    10
+
+[[12]]
+         
+xgb_pred5 acc good unacc vgood
+    acc   109    0     8     6
+    good    4   17     1     0
+    unacc   7    3   343     0
+    vgood   1    3     0    16
+

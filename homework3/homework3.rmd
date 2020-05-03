@@ -1,0 +1,528 @@
+---
+title: 'Data 622 - Homework #3'
+author: "Paul Britton"
+date: '2020-05-03'
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+toc_depth: 3
+number_sections: true
+theme: lumen
+---
+
+## Assignment Details
+
+No programming but function as a senior data scientist.
+
+Here is some background:
+
+You hired Kansales Ruffio as a summer intern in winter for his ML and R hacking skills.  You asked him to analyze a dataset from the internet. You provided him a training and test data partitions. KR bolted for 2/3 weeks showing up in his cubicle after 3 PM and working until you arrived in the office at 7 AM. Then, Ruffio showed up at 8 AM with an email to you saying he analyzed the dataset using several algorithms consistent with both No Free Lunch theorem and Occam's Razor.
+
+He claims you can simply source the R script which will create two files with confusion matrices and performance measures for classifiers.
+
+As his mentor and guide,
+
+1) you can  provide feedback how he can improve his approach to  data science.
+2) You may also identify and justify the choice of classifiers Ruffio ran to complete this task.
+3) You can compare the performance metrics of classifiers and provide an explanation for the observed performance variances.
+
+Ruffio can be given a pass grade if the script can be sourced free of errors. There are five files attached vglm_lda_script.txt is R script you can run on IBM without any modification the two output files that script generates and two data files for training and testing that Ruffio used. You do not have to do any work on IBM Cloud you can run without lifting a finger  But as per agreement I have uploaded it here -- now you have to make sure paths are consistent. 
+
+I will be reviewing the R code during the next two weeks during meetups while you will be analyzing the output and explaining the performance based on the kind of classifier used.
+
+Thank you
+
+```{r include=FALSE,warning=FALSE, error=FALSE, message=FALSE, echo=FALSE}
+traindatafile<-'C:/Users/Paul/OneDrive - CUNY School of Professional Studies/CUNY/DATA 622/homework3/car_eval_train.csv'
+trdata<-read.csv(traindatafile,head=T,sep=',')
+
+car_eval<-trdata
+names(car_eval)<-c("buying","maint","doors","persons","lug_boot","safety","class")
+names(trdata)<-c("buying","maint","doors","persons","lug_boot","safety","class")
+
+
+tstdatafile<-'C:/Users/Paul/OneDrive - CUNY School of Professional Studies/CUNY/DATA 622/homework3/car_eval_test.csv'
+tstdata<-read.csv(tstdatafile,head=T,sep=',')
+names(tstdata)<-names(car_eval)
+
+x<-tstdata[,1:6]
+y<-tstdata[[7]]
+
+if(!require(VGAM)) library(VGAM)
+if(!require(caret)) library(caret)
+
+vglm_model<-vglm(class~buying+maint+doors+persons+lug_boot+safety,family = "multinomial",data=car_eval)
+
+vglm_class_probabilities<-predict(vglm_model,tstdata[,1:6],type="response")
+
+vglm_predicted_class<-apply(vglm_class_probabilities,1,which.max)
+
+vglm_pred<-c()
+vglm_pred[which(vglm_predicted_class=="1")]<-levels(y)[1]
+vglm_pred[which(vglm_predicted_class=="2")]<-levels(y)[2]
+vglm_pred[which(vglm_predicted_class=="3")]<-levels(y)[3]
+vglm_pred[which(vglm_predicted_class=="4")]<-levels(y)[4]
+
+vglm_mtab<-table(vglm_pred,tstdata[[7]])
+(vglm_cmx<-confusionMatrix(table(vglm_pred,tstdata[[7]])))
+
+(vglm_accuracy<-sum(diag(vglm_mtab))/sum(vglm_mtab))
+
+if(!require(MASS)) library(MASS)
+
+lda_model<-lda(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+lda_class_probabilities<-predict(lda_model,tstdata[,1:6],type="response")
+
+(lda_cmx<-table(lda_class_probabilities$class,tstdata[[7]]))
+lda_mtab<-table(lda_class_probabilities$class,tstdata[[7]])
+(lda_accuracy<-sum(diag(lda_cmx))/sum(lda_cmx))
+ lda_cmx<-confusionMatrix(table(lda_class_probabilities$class,tstdata[[7]]))
+ 
+if(!require(rpart)) library(rpart)
+if(!require(rpart.plot)) library(rpart.plot)
+if(!require(randomForest)) library(randomForest)
+
+rpart_model<-rpart(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+rpart_class_probabilities<-predict(rpart_model,tstdata[,1:6],type="class")
+
+(rpart_mtab<-table(rpart_class_probabilities,tstdata[[7]]))
+rpart_cmx<-confusionMatrix(rpart_mtab)
+(rpart_accuracy<-sum(diag(rpart_mtab))/sum(rpart_mtab))
+
+# Now let us do ensemble methods
+# let us start with bagging bootstrap aggregation
+
+#bagging
+if(!require(ipred)) library(ipred)
+
+bag_model<-bagging(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+bag_class_probabilities<-predict(bag_model,tstdata[,1:6])#,type="response")
+
+(bag_mtab<-table(bag_class_probabilities,tstdata[[7]]))
+(bag_cmx<-confusionMatrix(bag_mtab))
+
+(bag_accuracy<-sum(diag(bag_mtab))/sum(bag_mtab))
+
+
+nlev<-4 # number of classes
+if(!require(gbm)) library(gbm)
+gbm_model<-gbm(class~buying+maint+doors+persons+lug_boot+safety, 	
+data=car_eval,n.trees=5000,interaction.depth=nlev,
+	shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",verbose=FALSE,n.cores=4)
+gbm_class_probabilities<-predict(gbm_model,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred<-apply(gbm_class_probabilities,1,which.max)
+
+gbm_predicted_class<-unlist(lapply(gbm_pred,FUN=function(x)levels(tstdata[[7]])[[x]]))
+
+(gbm_mtab<-table(gbm_predicted_class,tstdata[[7]]))
+(gbm_accuracy<-sum(diag(gbm_mtab))/sum(gbm_mtab))
+
+
+
+gbm_model2<-gbm(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval,n.trees=5000,interaction.depth=nlev,
+shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",
+verbose=FALSE,n.cores=4)
+gbm_class_probabilities2<-predict(gbm_model2,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred2<-apply(gbm_class_probabilities2,1,which.max)
+gbm_pred2[which(gbm_pred2=="1")]<-levels(tstdata[[7]])[1]
+gbm_pred2[which(gbm_pred2=="2")]<-levels(tstdata[[7]])[2]
+gbm_pred2[which(gbm_pred2=="3")]<-levels(tstdata[[7]])[3]
+gbm_pred2[which(gbm_pred2=="4")]<-levels(tstdata[[7]])[4]
+gbm_pred2<-as.factor(gbm_pred2)
+l<-union(gbm_pred2,tstdata[[7]])
+(gbm_mtab2<-table(factor(gbm_pred2,l),factor(tstdata[[7]],l)))
+(gbm_accuracy2<-sum(diag(gbm_mtab2))/sum(gbm_mtab2))
+(gbm_cmx2<-confusionMatrix(gbm_mtab2))
+
+nlev<-5 # number of classes+1
+gbm_model3<-gbm(class~buying+maint+doors+persons+lug_boot+safety, 	
+data=car_eval,n.trees=5000,interaction.depth=nlev,
+	shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",verbose=FALSE,n.cores=4)
+gbm_class_probabilities3<-predict(gbm_model3,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred3<-apply(gbm_class_probabilities3,1,which.max)
+##############
+gbm_pred3[which(gbm_pred3=="1")]<-levels(tstdata[[7]])[1]
+gbm_pred3[which(gbm_pred3=="2")]<-levels(tstdata[[7]])[2]
+gbm_pred3[which(gbm_pred3=="3")]<-levels(tstdata[[7]])[3]
+gbm_pred3[which(gbm_pred3=="4")]<-levels(tstdata[[7]])[4]
+gbm_pred3<-as.factor(gbm_pred3)
+l<-union(gbm_pred3,tstdata[[7]])
+(gbm_mtab3<-table(factor(gbm_pred3,l),factor(tstdata[[7]],l)))
+(gbm_accuracy3<-sum(diag(gbm_mtab3))/sum(gbm_mtab3))
+(gbm_cmx3<-confusionMatrix(gbm_mtab3))
+
+###################
+#gbm_predicted_class3<-unlist(lapply(gbm_pred3,FUN=function(x)levels(tstdata[[7]])[[x]]))
+
+#(gbm_mtab3<-table(gbm_predicted_class3,tstdata[[7]]))
+#(gbm_accuracy3<-sum(diag(gbm_mtab3))/sum(gbm_mtab3))
+#(gbm_cmx3<-confusionMatrix(gbm_mtab3))
+
+if(!require(randomForest))require(randomForest)
+rf_model<-randomForest(class~buying+maint+doors+persons+lug_boot+safety,
+data=car_eval)
+rf_pred<-predict(rf_model,tstdata[,1:6])
+rf_mtab<-table(rf_pred,tstdata[[7]])
+rf_cmx<-confusionMatrix(rf_mtab)
+rf_cmx$overall
+rf_cmx$byClass
+
+
+#XGBoost only works with numeric vectors. 
+#need to convert all other forms of data into numeric vectors.
+# we use Matrix sparse.model.matrix for that
+
+if(!require(xgboost)) library(xgboost)
+if(!require(Matrix)) library(Matrix)
+trdatamx<-sparse.model.matrix(class~.-1,data=trdata)
+tstdatamx<-sparse.model.matrix(class~.-1,data=tstdata)
+
+xgb_model<-xgboost(data=trdatamx,label=trdata$class,max_depth = 2, 
+eta = 1, nrounds = 2,nthread = 2, objective = "multi:softmax",num_class=5)
+
+xgb_pred <- predict(xgb_model,tstdatamx)
+xgb_tab<-table( xgb_pred)
+xgb_mtab<-table(xgb_pred,tstdata[[7]])
+#xgb_cmx<-confusionMatrix(xgb_mtab)
+#xgb_cmx$overall
+#xgb_cmx$byClass
+
+
+xgb_model4<-xgboost(data=trdatamx,label=trdata$class,max_depth = 4, 
+eta = 1, nrounds = 3,nthread = 2, objective = "multi:softmax",num_class=5)
+ xgb_pred4 <- predict(xgb_model4,tstdatamx)
+xgb_tab4<-table( xgb_pred4)
+temp_xgb_tab4<-xgb_tab4
+
+xgb_pred4[which(xgb_pred4=="1")]<-levels(y)[1]
+xgb_pred4[which(xgb_pred4=="2")]<-levels(y)[2]
+xgb_pred4[which(xgb_pred4=="3")]<-levels(y)[3]
+xgb_pred4[which(xgb_pred4=="4")]<-levels(y)[4]
+xgb_mtab4<-table(xgb_pred4,tstdata[[7]])
+xgb_cmx4<-confusionMatrix(xgb_mtab4)
+xgb_cmx4$overall
+xgb_cmx4$byClass
+
+xgb_model5<-xgboost(data=trdatamx,label=trdata$class,max_depth = 5, 
+eta = 1, nrounds = 4,nthread = 2, objective = "multi:softmax",num_class=5)
+ xgb_pred5 <- predict(xgb_model5,tstdatamx)
+table( xgb_pred5)
+
+xgb_tab5<-table( xgb_pred5)
+temp_xgb_tab5<-xgb_tab5
+
+xgb_pred5[which(xgb_pred5=="1")]<-levels(y)[1]
+xgb_pred5[which(xgb_pred5=="2")]<-levels(y)[2]
+xgb_pred5[which(xgb_pred5=="3")]<-levels(y)[3]
+xgb_pred5[which(xgb_pred5=="4")]<-levels(y)[4]
+xgb_mtab5<-table(xgb_pred5,tstdata[[7]])
+xgb_cmx5<-confusionMatrix(xgb_mtab5)
+xgb_cmx5$overall
+xgb_cmx5$byClass
+
+lapply(ls()[grep("mtab",ls())],FUN=function(x)eval(x))
+
+txt<-capture.output({lapply(ls()[grep("cmx",ls())],FUN=function(x)eval(parse(text=x)))})
+
+writeLines(txt,"confusionMxOutput.txt")
+
+mtabtxt<-capture.output({lapply(ls()[grep("mtab",ls())],FUN=function(x)eval(parse(text=x)))})
+writeLines(mtabtxt,"mtabOutput.txt") 
+```
+
+
+## Guidance for KR
+
+### Feedback On the Approach to Data Science
+
+As KR's mentor, I would first encourage him to dedicate time to ask questions and understanding the problem.  What are we trying to do here?  What do the variables mean?  What kind or style of classicication problem is this?  Is this problem analagous to any well-known problems?  
+
+KR's approach appears to be what would consider "tool centric" in the sense that he seems to just take the data, feed it into a bunch of models and produce numerous outputs.  This is evidenced by his approach of feverishly working through the night to outputs from 11 models and a good body of code, but no real insight for the end user.  The approach he is using is consistent with No Free Lunch Theorem (NFLT) and Occam's Razor (OR) in the sense that:
+* (NFLT) One of the models will likely perform better than all the others, however, he should not mistake this to mean that the model is actually "best" in this, or any other operational task.  Without having at least some intuitive understanding of the problem, it might not be appropriate to choose a model soley on performance.
+* (OR) One of the models will likely be less complex and more parsimonious than all the others, however, maybe this is a case where slightly more complexity is warranted.  It is difficult to know without first understanding the problem.
+
+His apparent proficency with the the tools and familiarity with numerous models is excellent.  I would encourage him to build his technical skills with the addition of a more intuitive component to his work.  He should approach the work as if his goal was to explain the high-level components of the problem AND his solution to a child (...or possibly even a business person!), similar to the technique of [Richard Feynman](https://medium.com/taking-note/learning-from-the-feynman-technique-5373014ad230) 
+
+### Identify and Justufy Classifiers
+
+* Multinomial Logistic Regression
+  + Simple and well understood.  Computationally efficient.  No tuning.
+  + Not the most powerful and ill suited to non-linear relationships. Poor at dealing with non-informative variables and prone to issues with multi-colinearity.
+* LDA Model - Linear Discriminant Analysis
+  + Relatively simple and "closed form", quick to implement and easy to understand.  Fewer tuning knobs.
+  + Assumes Gaussian class distributions, which may not be suitable for some problems.
+  + Also useful for dimensionality reduction.
+* Rpart - Recursive Partitioning
+  + Simple to understand and interpret (intuitive visualizations!).  Effective for both numerical and categorical data with little special data prep required.  Suitable for non-linear data. Robust and scalable.
+  + Easy to overfit
+* Random Forest
+  + Inherent protection vs. overfitting due to implied bagging.  Works with categorical and numerical and is robust to missing values and outliers.  Capable of dealing with non-linear data well.  Produces stable results with less data and is less impacted by noise.
+  + Is also inherently complex and "blackBox". Harder to gain intuition about what the model is doing.  Takes longer to train.
+* Bagging (Rpart - using iPred)
+  + The same attributes as covered for rpart above apply here as the bagging() function uses rpart by default
+  + The bagging process itself has the potential to reduce variance in high-variance models / dataset via the re-sampling process.  Of course, this is at a cost of increased bias. Improper re-sampling can amplify the risk of a high-bias result.
+* XGB - Gradient Boost
+  + Powerful predictive potential & flexibility.  Works with categorical and numerical and is robust to missing values and outliers.  Based on many weak learners, which, when combined, 
+  + Potential to be more complex.  More prone to overfitting due to high flexibility.  Potential sensitivity to outliers for the same reason.  Can be computationally heavy and harder to interpret. 
+
+
+In terms of model appropriateness, my feeling is that all of the models chosen are appropriate from an exploratory standpoint.  The simpler models (glm, lda) are beneficial both for their predictive capabilities AND as benchmarks for the more complex models (i.e. to facilitate an "Occam's Razor" approach).  The more complex models (XGB) may produce substantially better results. 
+
+
+### Performance Comparison
+
+Next we will consider model performance:
+
+```{r}
+library(knitr)
+library(ggplot2)
+
+perf <- c(bag_accuracy[[1]],
+          gbm_accuracy[[1]],
+          gbm_accuracy2[[1]],
+          gbm_accuracy3[[1]],
+          lda_accuracy[[1]],
+          rpart_accuracy[[1]],
+          vglm_accuracy[[1]])
+
+perf <- round(perf,3)
+          
+names <- c("bag",
+          "gbm1",
+          "gbm2",
+          "gbm3",
+          "lda",
+          "rpart",
+          "vglm") 
+
+perf <- data.frame(t(rbind(names,perf)))
+
+ggplot(perf,aes(x=names,y=perf))+
+  geom_bar(stat="identity")+
+  ggtitle("Model Accuracy")
+
+
+```
+
+If we visualize the accuracy of the models, we can see in the comparison plot below that the simpler models (lda, rpart and vglm) perform the worst.  The bagging model is the superior performer in the set, however, we know that bagging models are prone to high bias, particularly on smaller sata sets and as such, caution is warranted. 
+
+In the context of bias, when analyzing this (or any) problem I would encourage KR to think about the model in the appropriate context.  Things like the base-rate, for example: assume the objective here is to classify the liklihood of winning a Nobel Prize in any given year - because the probability of winning is near-zero, a naive model with extrene biased towads "unacc" may appear effective while only really exploiting the bias in the set.  
+
+The GMB models, which have depts of 2,4 & 5 respectively, are the next best performers.  The shallower the tree, the higher the bias and the lower the variance.  As tree depth increases, model complexity and variance both increase, thus for "gbm3" I would have the exact opposite concern as for "bag", i.e. that we might have a high-variance model.  The idea that the results are essentially identical between gbm1 and gbm2 may be indicative of a stable balance between bias and variance, and with accuracy at 97%, these seem like a good selection.
+
+Ultimately, however, the decision will have to be made in the context of the problem.  I would advise KR to think about gbm1 & gbm2 (and maybe build a "gb1.5" where depth = 3) vs the simpler vglm model.  Is the extra 4% accuracy worth the complexity for this particular use case?
+
+## Appendix
+
+### Source Code
+
+```{r warning=FALSE, error=FALSE, message=FALSE}
+traindatafile<-'C:/Users/Paul/OneDrive - CUNY School of Professional Studies/CUNY/DATA 622/homework3/car_eval_train.csv'
+trdata<-read.csv(traindatafile,head=T,sep=',')
+
+car_eval<-trdata
+names(car_eval)<-c("buying","maint","doors","persons","lug_boot","safety","class")
+names(trdata)<-c("buying","maint","doors","persons","lug_boot","safety","class")
+
+
+tstdatafile<-'C:/Users/Paul/OneDrive - CUNY School of Professional Studies/CUNY/DATA 622/homework3/car_eval_test.csv'
+tstdata<-read.csv(tstdatafile,head=T,sep=',')
+names(tstdata)<-names(car_eval)
+
+x<-tstdata[,1:6]
+y<-tstdata[[7]]
+
+if(!require(VGAM)) library(VGAM)
+if(!require(caret)) library(caret)
+
+vglm_model<-vglm(class~buying+maint+doors+persons+lug_boot+safety,family = "multinomial",data=car_eval)
+
+vglm_class_probabilities<-predict(vglm_model,tstdata[,1:6],type="response")
+
+vglm_predicted_class<-apply(vglm_class_probabilities,1,which.max)
+
+vglm_pred<-c()
+vglm_pred[which(vglm_predicted_class=="1")]<-levels(y)[1]
+vglm_pred[which(vglm_predicted_class=="2")]<-levels(y)[2]
+vglm_pred[which(vglm_predicted_class=="3")]<-levels(y)[3]
+vglm_pred[which(vglm_predicted_class=="4")]<-levels(y)[4]
+
+vglm_mtab<-table(vglm_pred,tstdata[[7]])
+(vglm_cmx<-confusionMatrix(table(vglm_pred,tstdata[[7]])))
+
+(vglm_accuracy<-sum(diag(vglm_mtab))/sum(vglm_mtab))
+
+if(!require(MASS)) library(MASS)
+
+lda_model<-lda(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+lda_class_probabilities<-predict(lda_model,tstdata[,1:6],type="response")
+
+(lda_cmx<-table(lda_class_probabilities$class,tstdata[[7]]))
+lda_mtab<-table(lda_class_probabilities$class,tstdata[[7]])
+(lda_accuracy<-sum(diag(lda_cmx))/sum(lda_cmx))
+ lda_cmx<-confusionMatrix(table(lda_class_probabilities$class,tstdata[[7]]))
+ 
+if(!require(rpart)) library(rpart)
+if(!require(rpart.plot)) library(rpart.plot)
+if(!require(randomForest)) library(randomForest)
+
+rpart_model<-rpart(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+rpart_class_probabilities<-predict(rpart_model,tstdata[,1:6],type="class")
+
+(rpart_mtab<-table(rpart_class_probabilities,tstdata[[7]]))
+rpart_cmx<-confusionMatrix(rpart_mtab)
+(rpart_accuracy<-sum(diag(rpart_mtab))/sum(rpart_mtab))
+
+# Now let us do ensemble methods
+# let us start with bagging bootstrap aggregation
+
+#bagging
+if(!require(ipred)) library(ipred)
+
+bag_model<-bagging(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval)
+
+bag_class_probabilities<-predict(bag_model,tstdata[,1:6])#,type="response")
+
+(bag_mtab<-table(bag_class_probabilities,tstdata[[7]]))
+(bag_cmx<-confusionMatrix(bag_mtab))
+
+(bag_accuracy<-sum(diag(bag_mtab))/sum(bag_mtab))
+
+
+nlev<-4 # number of classes
+if(!require(gbm)) library(gbm)
+gbm_model<-gbm(class~buying+maint+doors+persons+lug_boot+safety, 	
+data=car_eval,n.trees=5000,interaction.depth=nlev,
+	shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",verbose=FALSE,n.cores=4)
+gbm_class_probabilities<-predict(gbm_model,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred<-apply(gbm_class_probabilities,1,which.max)
+
+gbm_predicted_class<-unlist(lapply(gbm_pred,FUN=function(x)levels(tstdata[[7]])[[x]]))
+
+(gbm_mtab<-table(gbm_predicted_class,tstdata[[7]]))
+(gbm_accuracy<-sum(diag(gbm_mtab))/sum(gbm_mtab))
+
+
+
+gbm_model2<-gbm(class~buying+maint+doors+persons+lug_boot+safety,data=car_eval,n.trees=5000,interaction.depth=nlev,
+shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",
+verbose=FALSE,n.cores=4)
+gbm_class_probabilities2<-predict(gbm_model2,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred2<-apply(gbm_class_probabilities2,1,which.max)
+gbm_pred2[which(gbm_pred2=="1")]<-levels(tstdata[[7]])[1]
+gbm_pred2[which(gbm_pred2=="2")]<-levels(tstdata[[7]])[2]
+gbm_pred2[which(gbm_pred2=="3")]<-levels(tstdata[[7]])[3]
+gbm_pred2[which(gbm_pred2=="4")]<-levels(tstdata[[7]])[4]
+gbm_pred2<-as.factor(gbm_pred2)
+l<-union(gbm_pred2,tstdata[[7]])
+(gbm_mtab2<-table(factor(gbm_pred2,l),factor(tstdata[[7]],l)))
+(gbm_accuracy2<-sum(diag(gbm_mtab2))/sum(gbm_mtab2))
+(gbm_cmx2<-confusionMatrix(gbm_mtab2))
+
+nlev<-5 # number of classes+1
+gbm_model3<-gbm(class~buying+maint+doors+persons+lug_boot+safety, 	
+data=car_eval,n.trees=5000,interaction.depth=nlev,
+	shrinkage=0.001,bag.fraction=0.8,distribution="multinomial",verbose=FALSE,n.cores=4)
+gbm_class_probabilities3<-predict(gbm_model3,tstdata[,1:6],n.trees=5000,type="response")
+gbm_pred3<-apply(gbm_class_probabilities3,1,which.max)
+##############
+gbm_pred3[which(gbm_pred3=="1")]<-levels(tstdata[[7]])[1]
+gbm_pred3[which(gbm_pred3=="2")]<-levels(tstdata[[7]])[2]
+gbm_pred3[which(gbm_pred3=="3")]<-levels(tstdata[[7]])[3]
+gbm_pred3[which(gbm_pred3=="4")]<-levels(tstdata[[7]])[4]
+gbm_pred3<-as.factor(gbm_pred3)
+l<-union(gbm_pred3,tstdata[[7]])
+(gbm_mtab3<-table(factor(gbm_pred3,l),factor(tstdata[[7]],l)))
+(gbm_accuracy3<-sum(diag(gbm_mtab3))/sum(gbm_mtab3))
+(gbm_cmx3<-confusionMatrix(gbm_mtab3))
+
+###################
+#gbm_predicted_class3<-unlist(lapply(gbm_pred3,FUN=function(x)levels(tstdata[[7]])[[x]]))
+
+#(gbm_mtab3<-table(gbm_predicted_class3,tstdata[[7]]))
+#(gbm_accuracy3<-sum(diag(gbm_mtab3))/sum(gbm_mtab3))
+#(gbm_cmx3<-confusionMatrix(gbm_mtab3))
+
+if(!require(randomForest))require(randomForest)
+rf_model<-randomForest(class~buying+maint+doors+persons+lug_boot+safety,
+data=car_eval)
+rf_pred<-predict(rf_model,tstdata[,1:6])
+rf_mtab<-table(rf_pred,tstdata[[7]])
+rf_cmx<-confusionMatrix(rf_mtab)
+rf_cmx$overall
+rf_cmx$byClass
+
+
+#XGBoost only works with numeric vectors. 
+#need to convert all other forms of data into numeric vectors.
+# we use Matrix sparse.model.matrix for that
+
+if(!require(xgboost)) library(xgboost)
+if(!require(Matrix)) library(Matrix)
+trdatamx<-sparse.model.matrix(class~.-1,data=trdata)
+tstdatamx<-sparse.model.matrix(class~.-1,data=tstdata)
+
+xgb_model<-xgboost(data=trdatamx,label=trdata$class,max_depth = 2, 
+eta = 1, nrounds = 2,nthread = 2, objective = "multi:softmax",num_class=5)
+
+xgb_pred <- predict(xgb_model,tstdatamx)
+xgb_tab<-table( xgb_pred)
+xgb_mtab<-table(xgb_pred,tstdata[[7]])
+#xgb_cmx<-confusionMatrix(xgb_mtab)
+#xgb_cmx$overall
+#xgb_cmx$byClass
+
+
+xgb_model4<-xgboost(data=trdatamx,label=trdata$class,max_depth = 4, 
+eta = 1, nrounds = 3,nthread = 2, objective = "multi:softmax",num_class=5)
+ xgb_pred4 <- predict(xgb_model4,tstdatamx)
+xgb_tab4<-table( xgb_pred4)
+temp_xgb_tab4<-xgb_tab4
+
+xgb_pred4[which(xgb_pred4=="1")]<-levels(y)[1]
+xgb_pred4[which(xgb_pred4=="2")]<-levels(y)[2]
+xgb_pred4[which(xgb_pred4=="3")]<-levels(y)[3]
+xgb_pred4[which(xgb_pred4=="4")]<-levels(y)[4]
+xgb_mtab4<-table(xgb_pred4,tstdata[[7]])
+xgb_cmx4<-confusionMatrix(xgb_mtab4)
+xgb_cmx4$overall
+xgb_cmx4$byClass
+
+xgb_model5<-xgboost(data=trdatamx,label=trdata$class,max_depth = 5, 
+eta = 1, nrounds = 4,nthread = 2, objective = "multi:softmax",num_class=5)
+ xgb_pred5 <- predict(xgb_model5,tstdatamx)
+table( xgb_pred5)
+
+xgb_tab5<-table( xgb_pred5)
+temp_xgb_tab5<-xgb_tab5
+
+xgb_pred5[which(xgb_pred5=="1")]<-levels(y)[1]
+xgb_pred5[which(xgb_pred5=="2")]<-levels(y)[2]
+xgb_pred5[which(xgb_pred5=="3")]<-levels(y)[3]
+xgb_pred5[which(xgb_pred5=="4")]<-levels(y)[4]
+xgb_mtab5<-table(xgb_pred5,tstdata[[7]])
+xgb_cmx5<-confusionMatrix(xgb_mtab5)
+xgb_cmx5$overall
+xgb_cmx5$byClass
+
+lapply(ls()[grep("mtab",ls())],FUN=function(x)eval(x))
+
+txt<-capture.output({lapply(ls()[grep("cmx",ls())],FUN=function(x)eval(parse(text=x)))})
+
+writeLines(txt,"confusionMxOutput.txt")
+
+mtabtxt<-capture.output({lapply(ls()[grep("mtab",ls())],FUN=function(x)eval(parse(text=x)))})
+writeLines(mtabtxt,"mtabOutput.txt") 
+```
+
+
+
